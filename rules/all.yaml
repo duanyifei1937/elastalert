@@ -1,0 +1,54 @@
+# required:
+es_host: 1.2.3.4
+es_port: 9200
+index: logstash-nginx-log-server*
+type: frequency
+
+es_username: "elastic"
+es_password: "123456"
+
+# Optional:
+name: "test-test"
+description: "测试nginx count 4h 内访问大于50"
+num_events: 20
+timeframe:
+  minutes: 1
+filter:
+- term:
+    status: 200
+alert:
+- "elastalert_modules.dingtalk_alert.DingTalkAlerter"
+dingtalk_webhook: "https://oapi.dingtalk.com/robot/send?access_token=xxx"
+dingtalk_msgtype: "text"
+
+# alert inhibited:
+# 报警间隔指数增加，默认不设置，使报警等时间间隔发出；
+query_key:
+  - name
+realert:
+  minutes: 1
+# exponential_realert:
+#   hours: 1
+
+
+# # 报警聚合：(默认即可)
+# # 根据报警的内，将相同的报警安装 name 来聚合
+# aggregation_key: name
+
+# # 聚合报警的内容，只展示 name 与 message
+# summary_table_fields:
+#   - name
+#   - message
+
+
+# # 报警格式化：
+# alert_subject: "Error {} @{}"
+# alert_subject_args:
+#   - name
+#   - "@timestamp"
+alert_text_type: exclude_fields
+alert_text: |
+  ### test-test-test
+  > Message: {}
+alert_text_args:
+  - description

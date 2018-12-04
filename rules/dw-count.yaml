@@ -1,0 +1,30 @@
+# flatline 数据格式支持不正确
+# dw-count
+es_host: 1.2.3.4
+es_port: 9200
+index: api_records*
+type: flatline
+
+name: "dw-total"
+description: "dw-total流水请求分钟内<8K"
+
+threshold: 8000
+timeframe:
+  minutes: 1
+use_count_query: true
+doc_type: "records"
+
+alert:
+- "elastalert_modules.dingtalk_alert.DingTalkAlerter"
+dingtalk_webhook: "https://oapi.dingtalk.com/robot/send?access_token=xxx"
+dingtalk_msgtype: "text"
+
+realert:
+  minutes: 1
+
+alert_text_type: exclude_fields
+alert_text: |
+  ### dw-total
+  > Message: {}
+alert_text_args:
+  - description

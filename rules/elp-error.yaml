@@ -1,0 +1,30 @@
+# elp-error
+es_host: 1.2.3.4
+es_port: 9200
+index: logstash-nlp-api*
+type: frequency
+
+name: "nlp_error_count"
+description: "NLP错误数分钟内>1"
+num_events: 1
+timeframe:
+  minutes: 1
+filter:
+- term:
+    level: "ERROR"
+alert:
+- "elastalert_modules.dingtalk_alert.DingTalkAlerter"
+dingtalk_webhook: "https://oapi.dingtalk.com/robot/send?access_token=xxx"
+dingtalk_msgtype: "text"
+
+query_key:
+  - name
+realert:
+  minutes: 1
+
+alert_text_type: exclude_fields
+alert_text: |
+  ### nlp_error_count
+  > Message: {}
+alert_text_args:
+  - description

@@ -1,0 +1,7 @@
+---
+# Default Kibana configuration from kibana-docker.
+
+server.name: kibana
+server.host: "localhost"
+elasticsearch.url: http://172.16.16.54:9200
+xpack.monitoring.ui.container.elasticsearch.enabled: flase

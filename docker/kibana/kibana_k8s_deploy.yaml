@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-alert-config
+  namespace: monitoring
+  labels:
+    name: kibana-alert-config
+data:
+  kibana.yml: |
+    ---
+    # Default Kibana configuration from kibana-docker.
+
+    server.name: kibana
+    server.host: "localhost"
+    elasticsearch.url: http://elasticsearch-alert:9200
+    xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+    elastalert-kibana-plugin.serverHost: elastalert
+    elastalert-kibana-plugin.serverPort: 3030
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-alert
+  namespace: monitoring
+  labels:
+    name: kibana-alert
+spec:
+  type: NodePort
+  ports:
+    - port: 5601
+      targetPort: 5601
+      protocol: TCP
+      nodePort: 30112
+  selector:
+    app: kibana-alert
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kibana-alert
+  namespace: monitoring
+  labels:
+    app: kibana-alert
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kibana-alert
+    spec:
+      containers:
+      - name: kibana-alert
+        image: harbor.qyvideo.net/duanyifei-test/kibana:6.5.0_v1
+        volumeMounts:
+          - name: kibana-alert-config
+            mountPath: /usr/share/kibana/config/kibana.yml
+            subPath: kibana.yml
+      volumes:
+        - name: kibana-alert-config
+          configMap:
+            name: kibana-alert-config
